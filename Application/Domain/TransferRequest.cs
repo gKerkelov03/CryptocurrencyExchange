@@ -1,0 +1,11 @@
+using System;
+
+namespace Application.Domain;
+
+public class TransferRequest
+{
+    public Guid FromUserId { get; set; }
+    public Guid ToUserId { get; set; }
+    public Guid CryptocurrencyId { get; set; }
+    public decimal Amount { get; set; }
+} 

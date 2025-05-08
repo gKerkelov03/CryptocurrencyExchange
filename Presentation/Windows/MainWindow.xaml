@@ -6,66 +6,92 @@
         xmlns:local="clr-namespace:Presentation.Windows"
         xmlns:viewmodels="clr-namespace:Presentation.ViewModels"
         mc:Ignorable="d"
-        Title="Cryptocurrency Exchange" Height="600" Width="1000"
-        WindowStartupLocation="CenterScreen">
-    
+        Title="Crypto Exchange" Height="600" Width="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Menu -->
+        <!-- Menu Bar -->
         <Menu Grid.Row="0">
             <MenuItem Header="File">
+                <MenuItem Header="Logout" Command="{Binding LogoutCommand}"/>
                 <MenuItem Header="Exit" Command="{Binding ExitCommand}"/>
-            </MenuItem>
-            <MenuItem Header="Account">
-                <MenuItem Header="Logout" Command="{Binding LogoutCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"/>
             </MenuItem>
         </Menu>
 
         <!-- Main Content -->
         <Grid Grid.Row="1" Margin="10">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="250"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="300"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Left Panel - Balances -->
-            <GroupBox Header="Your Balances" Grid.Column="0" Margin="0,0,10,0">
-                <ListView ItemsSource="{Binding Balances}">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding Currency}" FontWeight="Bold" Margin="0,0,5,0"/>
-                                <TextBlock Text="{Binding Amount, StringFormat=N2}"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+            <!-- Balances List -->
+            <GroupBox Grid.Column="0" Header="My Balances" Margin="0,0,5,0">
+                <DataGrid ItemsSource="{Binding NonZeroBalances}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          SelectionMode="Single">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Cryptocurrency" Binding="{Binding Cryptocurrency.Name}" Width="*"/>
+                        <DataGridTextColumn Header="Amount" Binding="{Binding Amount, StringFormat=N8}" Width="*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
             </GroupBox>
 
-            <!-- Right Panel - Trading -->
-            <GroupBox Header="Trading" Grid.Column="1">
-                <Grid>
+            <!-- Transfer Section -->
+            <GroupBox Grid.Column="1" Header="Send Cryptocurrency" Margin="5,0,0,0">
+                <Grid Margin="5">
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <!-- Trading Controls -->
-                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
-                        <Button Content="Buy" Command="{Binding TradeCommand}" Margin="0,0,10,0" Padding="20,5"/>
-                        <Button Content="Sell" Command="{Binding TradeCommand}" Padding="20,5"/>
+                    <!-- From Balance -->
+                    <TextBlock Grid.Row="0" Text="From Balance:" Margin="0,5"/>
+                    <ComboBox Grid.Row="1" 
+                              ItemsSource="{Binding NonZeroBalances}"
+                              SelectedItem="{Binding SelectedFromBalance}"
+                              DisplayMemberPath="Cryptocurrency.Name"
+                              Margin="0,5"/>
+
+                    <!-- To User -->
+                    <TextBlock Grid.Row="2" Text="To User:" Margin="0,5"/>
+                    <ComboBox Grid.Row="3" 
+                              ItemsSource="{Binding OtherUsers}"
+                              SelectedItem="{Binding SelectedToUser}"
+                              DisplayMemberPath="Username"
+                              Margin="0,5"/>
+
+                    <!-- Amount -->
+                    <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="0,5">
+                        <TextBlock Text="Amount:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <TextBox Text="{Binding TransferAmount, StringFormat=N8}" 
+                                 Width="100"
+                                 VerticalAlignment="Center"/>
                     </StackPanel>
 
-                    <!-- Trading Chart/History -->
-                    <Border Grid.Row="1" BorderBrush="Gray" BorderThickness="1">
-                        <TextBlock Text="Trading chart and history will be displayed here" 
-                                 HorizontalAlignment="Center" 
-                                 VerticalAlignment="Center"/>
-                    </Border>
+                    <!-- Send Button -->
+                    <Button Grid.Row="5" 
+                            Content="Send" 
+                            Command="{Binding SendCommand}"
+                            VerticalAlignment="Top"
+                            Margin="0,10"
+                            Height="30"/>
+
+                    <!-- Error Message -->
+                    <TextBlock Grid.Row="5" 
+                               Text="{Binding ErrorMessage}"
+                               Foreground="Red"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Bottom"
+                               Margin="0,5"/>
                 </Grid>
             </GroupBox>
         </Grid>

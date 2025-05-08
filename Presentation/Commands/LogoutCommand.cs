@@ -8,24 +8,30 @@ namespace Presentation.Commands;
 public class LogoutCommand : ICommand
 {
     private readonly IUserService _userService;
+    private IBalanceService _balanceService;
 
-    public LogoutCommand(IUserService userService)
+    public LogoutCommand(IUserService userService, IBalanceService balanceService)
     {
         _userService = userService;
+        _balanceService = balanceService;
     }
 
-    public event EventHandler? CanExecuteChanged;
-
-    public bool CanExecute(object? parameter) => true;
-
-    public void Execute(object? parameter)
+    public event EventHandler CanExecuteChanged
     {
-        var loginWindow = new LoginWindow(_userService);
+        add => CommandManager.RequerySuggested += value;
+        remove => CommandManager.RequerySuggested -= value;
+    }
+
+    public bool CanExecute(object parameter)
+    {
+        return true;
+    }
+
+    public void Execute(object parameter)
+    {
+        var loginWindow = new LoginWindow(_userService, _balanceService);
         loginWindow.Show();
-        
-        if (parameter is Window window)
-        {
-            window.Close();
-        }
+        System.Windows.Application.Current.MainWindow.Close();
+        System.Windows.Application.Current.MainWindow = loginWindow;
     }
 } 

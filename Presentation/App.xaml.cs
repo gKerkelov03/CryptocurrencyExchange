@@ -28,9 +28,6 @@ public partial class App : System.Windows.Application
         var presentationLayer = typeof(App).Assembly;
         var assemblies = new Assembly[] { dataLayer, applicationLayer, presentationLayer };
 
-        var test1 = new PasswordHasher().HashPassword("admin123");
-        var test2 = new PasswordHasher().HashPassword("user123");
-
         _host = Host.CreateDefaultBuilder()
             .ConfigureServices((hostContext, services) => {
                 services.SetupSqlServer();

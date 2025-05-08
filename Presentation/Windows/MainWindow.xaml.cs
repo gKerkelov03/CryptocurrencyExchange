@@ -7,13 +7,17 @@ namespace Presentation.Windows;
 
 public partial class MainWindow : Window
 {
-    private IUserService _userService;
+    private readonly IUserService _userService;
+    private readonly IBalanceService _balanceService;
+    private readonly User _currentUser;
 
-    public MainWindow(User currentUser, IUserService userService)
+    public MainWindow(IUserService userService, IBalanceService balanceService, User currentUser)
     {
         InitializeComponent();
         _userService = userService;
-        DataContext = new MainViewModel(currentUser, userService);
+        _balanceService = balanceService;
+        _currentUser = currentUser;
+        DataContext = new MainViewModel(userService, balanceService, currentUser);
     }
 
     private void ExitMenuItem_Click(object sender, RoutedEventArgs e)
@@ -23,7 +27,7 @@ public partial class MainWindow : Window
 
     private void LogoutMenuItem_Click(object sender, RoutedEventArgs e)
     {
-        var loginWindow = new LoginWindow(_userService);
+        var loginWindow = new LoginWindow(_userService, _balanceService);
         loginWindow.Show();
         Close();
     }

@@ -7,13 +7,12 @@ namespace Presentation.Windows;
 
 public partial class LoginWindow : Window, ITransientLifetime
 {
-    private readonly IUserService _userService;
+    
 
-    public LoginWindow(IUserService userService)
+    public LoginWindow(IUserService userService, IBalanceService balanceService)
     {
         InitializeComponent();
-        _userService = userService;
-        DataContext = new LoginViewModel(_userService);
+        DataContext = new LoginViewModel(userService, balanceService);
     }
 
     private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
