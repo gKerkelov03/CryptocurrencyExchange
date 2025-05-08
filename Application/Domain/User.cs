@@ -22,5 +22,7 @@ public class User : BaseEntity
     [Required]
     public string Password { get; set; } = string.Empty;
 
-    public Role? Role { get; set; }
+    public virtual ICollection<Role>? Roles { get; set; }
+
+    public virtual ICollection<Balance>? Balances { get; set; }
 }

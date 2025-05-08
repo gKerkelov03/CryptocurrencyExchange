@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Presentation.Windows;
 using SmartSalon.Application.ResultObject;
+using Data.Extensions;
+using Microsoft.EntityFrameworkCore;
 
 namespace Presentation;
 
@@ -27,6 +29,9 @@ public partial class App : System.Windows.Application
 
         _host = Host.CreateDefaultBuilder()
             .ConfigureServices((hostContext, services) => {
+                services.SetupSqlServer();
+                services.AddHttpClient();
+
                 services.Scan(types =>
                 {
                     var allTypes = types.FromAssemblies(assemblies);
@@ -49,6 +54,18 @@ public partial class App : System.Windows.Application
     protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+
+        var dbContext = _host.Services.GetRequiredService<DatabaseContext>();
+        try
+        {
+            dbContext.Database.Migrate();
+        }
+        catch (Exception)
+        {
+            //The database already exists and thats why it throws exception;
+        }
+        
+
         await _host.StartAsync();
 
         var loginWindow = _host.Services.GetRequiredService<LoginWindow>();

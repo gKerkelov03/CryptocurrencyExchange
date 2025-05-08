@@ -8,5 +8,7 @@ namespace Application.Domain;
 public class Role : BaseEntity
 {
     [Required]
-    public string Name { get; set; } = string.Empty;   
+    public string Name { get; set; } = string.Empty;
+
+    public  virtual ICollection<User>? Users { get; set; }
 }
