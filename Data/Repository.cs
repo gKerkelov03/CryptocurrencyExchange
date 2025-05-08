@@ -1,6 +1,4 @@
-﻿
-
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using Application.Abstractions;
 using Application.Domain.Base;
 using Application.Errors;
@@ -19,13 +17,13 @@ public class Repository<TEntity>(DatabaseContext _dbContext) : IEfRepository<TEn
     public async Task<TEntity?> GetByIdAsync(Guid id) => await _dbSet.FindAsync(id);
 
     public async Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate)
-        => await _dbSet.FirstOrDefaultAsync(predicate);
+        => await _dbSet.IncludeAll().FirstOrDefaultAsync(predicate);
 
     public TEntity? FirstOrDefault(Expression<Func<TEntity, bool>> predicate)
-        => _dbSet.FirstOrDefault(predicate);
+        => _dbSet.IncludeAll().FirstOrDefault(predicate);
 
     public async Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate)
-        => await _dbSet.Where(predicate).ToListAsync();
+        => await _dbSet.IncludeAll().Where(predicate).ToListAsync();
 
     public async Task AddAsync(TEntity entity) => await _dbSet.AddAsync(entity);
 
@@ -59,4 +57,22 @@ public class Repository<TEntity>(DatabaseContext _dbContext) : IEfRepository<TEn
     }
 
     public void Update(TEntity newEntity) => _dbSet.Update(newEntity);
+}
+
+public static class DbSetExtensions
+{
+    public static IQueryable<TEntity> IncludeAll<TEntity>(this DbSet<TEntity> dbSet) where TEntity : class
+    {
+        var query = dbSet.AsQueryable();
+        var entityType = typeof(TEntity);
+        var properties = entityType.GetProperties()
+            .Where(p => p.PropertyType.IsClass && p.PropertyType != typeof(string));
+
+        foreach (var property in properties)
+        {
+            query = query.Include(property.Name);
+        }
+
+        return query;
+    }
 }

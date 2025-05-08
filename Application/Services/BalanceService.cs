@@ -6,6 +6,7 @@ using Application.Abstractions;
 using Application.Domain;
 using Application.Domain.Base;
 using Application.Errors;
+using Microsoft.EntityFrameworkCore;
 using SmartSalon.Application.ResultObject;
 
 namespace Application.Services;
