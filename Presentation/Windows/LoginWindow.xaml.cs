@@ -7,12 +7,17 @@ namespace Presentation.Windows;
 
 public partial class LoginWindow : Window, ITransientLifetime
 {
-    
+    private readonly IUserService _userService;
+    private readonly IBalanceService _balanceService;
+    private readonly ICryptoPriceService _cryptoPriceService;
 
-    public LoginWindow(IUserService userService, IBalanceService balanceService)
+    public LoginWindow(IUserService userService, IBalanceService balanceService, ICryptoPriceService cryptoPriceService)
     {
         InitializeComponent();
-        DataContext = new LoginViewModel(userService, balanceService);
+        _userService = userService;
+        _balanceService = balanceService;
+        _cryptoPriceService = cryptoPriceService;
+        DataContext = new LoginViewModel(userService, balanceService, cryptoPriceService);
     }
 
     private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)

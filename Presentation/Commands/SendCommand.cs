@@ -2,6 +2,7 @@ using System.Windows.Input;
 using Application.Abstractions;
 using Application.Domain;
 using Application.Models;
+using Presentation.ViewModels;
 
 namespace Presentation.Commands;
 
@@ -14,6 +15,7 @@ public class SendCommand : ICommand
     private readonly Action<double> _onAmountChanged;
     private readonly Action<string> _onError;
     private readonly Action _onSuccess;
+    private readonly MainViewModel _mainViewModel;
 
     private Balance _selectedFromBalance;
     private User _selectedToUser;
@@ -26,7 +28,8 @@ public class SendCommand : ICommand
         Action<User> onUserSelected,
         Action<double> onAmountChanged,
         Action<string> onError,
-        Action onSuccess)
+        Action onSuccess,
+        MainViewModel mainViewModel)
     {
         _balanceService = balanceService;
         _currentUser = currentUser;
@@ -35,6 +38,7 @@ public class SendCommand : ICommand
         _onAmountChanged = onAmountChanged;
         _onError = onError;
         _onSuccess = onSuccess;
+        _mainViewModel = mainViewModel;
     }
 
     public event EventHandler CanExecuteChanged
@@ -101,6 +105,9 @@ public class SendCommand : ICommand
             _onAmountChanged?.Invoke(0);
             _onBalanceSelected?.Invoke(null);
             _onUserSelected?.Invoke(null);
+
+            // Refresh balances list
+            await _mainViewModel.LoadDataAsync();
 
             _onSuccess?.Invoke();
         }

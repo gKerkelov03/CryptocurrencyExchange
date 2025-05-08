@@ -17,24 +17,27 @@ public class MainViewModel : ViewModelBase
 {
     private readonly IUserService _userService;
     private readonly IBalanceService _balanceService;
+    private readonly ICryptoPriceService _cryptoPriceService;
     private User _currentUser;
     private string _errorMessage;
     private Balance _selectedFromBalance;
     private User _selectedToUser;
     private double _transferAmount;
     private bool _isUpdating;
+    private double _totalBalance;
 
     public ICommand LogoutCommand { get; }
     public ICommand ExitCommand { get; }
     public ICommand SendCommand { get; }
 
-    public MainViewModel(IUserService userService, IBalanceService balanceService, User currentUser)
+    public MainViewModel(IUserService userService, IBalanceService balanceService, ICryptoPriceService cryptoPriceService, User currentUser)
     {
         _userService = userService;
         _balanceService = balanceService;
+        _cryptoPriceService = cryptoPriceService;
         _currentUser = currentUser;
 
-        LogoutCommand = new LogoutCommand(userService, balanceService);
+        LogoutCommand = new LogoutCommand(userService, balanceService, cryptoPriceService);
         ExitCommand = new ExitCommand();
         SendCommand = new SendCommand(
             balanceService,
@@ -43,7 +46,8 @@ public class MainViewModel : ViewModelBase
             user => SelectedToUser = user,
             amount => TransferAmount = amount,
             error => ErrorMessage = error,
-            () => MessageBox.Show("Transfer completed successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information)
+            () => MessageBox.Show("Transfer completed successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information),
+            this
         );
 
         LoadData();
@@ -51,6 +55,12 @@ public class MainViewModel : ViewModelBase
 
     public ObservableCollection<Balance> NonZeroBalances { get; } = new();
     public ObservableCollection<User> OtherUsers { get; } = new();
+
+    public double TotalBalance
+    {
+        get => _totalBalance;
+        private set => SetProperty(ref _totalBalance, value);
+    }
 
     public Balance SelectedFromBalance
     {
@@ -124,8 +134,7 @@ public class MainViewModel : ViewModelBase
         set => SetProperty(ref _errorMessage, value);
     }
 
-
-    private async void LoadData()
+    public async Task LoadDataAsync()
     {
         try
         {
@@ -135,6 +144,30 @@ public class MainViewModel : ViewModelBase
             foreach (var balance in balances.Where(b => b.Amount > 0))
             {
                 NonZeroBalances.Add(balance);
+            }
+
+            // Calculate total balance in USD
+            if (NonZeroBalances.Any())
+            {
+                var cryptoIds = NonZeroBalances.Select(b => b.Cryptocurrency?.CryptocurrencyId).Where(id => id != null).ToArray();
+                var prices = await _cryptoPriceService.GetCryptoPricesAsync(cryptoIds, "usd");
+                
+                double total = 0;
+                foreach (var balance in NonZeroBalances)
+                {
+                    if (balance.Cryptocurrency != null && prices.TryGetValue(balance.Cryptocurrency.CryptocurrencyId, out var currencyPrices))
+                    {
+                        if (currencyPrices.TryGetValue("usd", out var price))
+                        {
+                            total += balance.Amount * price;
+                        }
+                    }
+                }
+                TotalBalance = total;
+            }
+            else
+            {
+                TotalBalance = 0;
             }
 
             // Load other users
@@ -149,5 +182,10 @@ public class MainViewModel : ViewModelBase
         {
             ErrorMessage = $"Error loading data: {ex.Message}";
         }
+    }
+
+    private async void LoadData()
+    {
+        await LoadDataAsync();
     }
 } 

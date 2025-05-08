@@ -30,15 +30,28 @@
 
             <!-- Balances List -->
             <GroupBox Grid.Column="0" Header="My Balances" Margin="0,0,5,0">
-                <DataGrid ItemsSource="{Binding NonZeroBalances}"
-                          AutoGenerateColumns="False"
-                          IsReadOnly="True"
-                          SelectionMode="Single">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Cryptocurrency" Binding="{Binding Cryptocurrency.Name}" Width="*"/>
-                        <DataGridTextColumn Header="Amount" Binding="{Binding Amount, StringFormat=N8}" Width="*"/>
-                    </DataGrid.Columns>
-                </DataGrid>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,5">
+                        <TextBlock Text="Total: $" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding TotalBalance, StringFormat=N2}" VerticalAlignment="Center" FontWeight="Bold"/>
+                    </StackPanel>
+
+                    <DataGrid Grid.Row="1" 
+                              ItemsSource="{Binding NonZeroBalances}"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              SelectionMode="Single">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Cryptocurrency" Binding="{Binding Cryptocurrency.Name}" Width="*"/>
+                            <DataGridTextColumn Header="Amount" Binding="{Binding Amount, StringFormat=N8}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
             </GroupBox>
 
             <!-- Transfer Section -->
