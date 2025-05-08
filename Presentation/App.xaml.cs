@@ -8,6 +8,7 @@ using Presentation.Windows;
 using SmartSalon.Application.ResultObject;
 using Data.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Application.Services;
 
 namespace Presentation;
 
@@ -26,6 +27,9 @@ public partial class App : System.Windows.Application
         var applicationLayer = typeof(Result).Assembly;
         var presentationLayer = typeof(App).Assembly;
         var assemblies = new Assembly[] { dataLayer, applicationLayer, presentationLayer };
+
+        var test1 = new PasswordHasher().HashPassword("admin123");
+        var test2 = new PasswordHasher().HashPassword("user123");
 
         _host = Host.CreateDefaultBuilder()
             .ConfigureServices((hostContext, services) => {
@@ -46,6 +50,8 @@ public partial class App : System.Windows.Application
                         .AsSelfWithInterfaces()
                         .WithTransientLifetime();
                 });
+
+                services.AddTransient(typeof(IEfRepository<>), typeof(Repository<>));
             })
             .Build();
     }
@@ -56,14 +62,7 @@ public partial class App : System.Windows.Application
         base.OnStartup(e);
 
         var dbContext = _host.Services.GetRequiredService<DatabaseContext>();
-        try
-        {
-            dbContext.Database.Migrate();
-        }
-        catch (Exception)
-        {
-            //The database already exists and thats why it throws exception;
-        }
+        dbContext.Database.Migrate();
         
 
         await _host.StartAsync();

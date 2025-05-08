@@ -31,10 +31,10 @@ namespace Data.Migrations
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
-                    b.Property<Guid?>("CryptocurrencyId")
+                    b.Property<Guid>("CryptocurrencyId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("UserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -44,6 +44,43 @@ namespace Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Balances");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("55555555-5555-5555-5555-555555555555"),
+                            Amount = 1.5,
+                            CryptocurrencyId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            UserId = new Guid("33333333-3333-3333-3333-333333333333")
+                        },
+                        new
+                        {
+                            Id = new Guid("66666666-6666-6666-6666-666666666666"),
+                            Amount = 10.0,
+                            CryptocurrencyId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                            UserId = new Guid("33333333-3333-3333-3333-333333333333")
+                        },
+                        new
+                        {
+                            Id = new Guid("77777777-7777-7777-7777-777777777777"),
+                            Amount = 0.5,
+                            CryptocurrencyId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            UserId = new Guid("44444444-4444-4444-4444-444444444444")
+                        },
+                        new
+                        {
+                            Id = new Guid("88888888-8888-8888-8888-888888888888"),
+                            Amount = 5.0,
+                            CryptocurrencyId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                            UserId = new Guid("44444444-4444-4444-4444-444444444444")
+                        },
+                        new
+                        {
+                            Id = new Guid("99999999-9999-9999-9999-999999999999"),
+                            Amount = 1000.0,
+                            CryptocurrencyId = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"),
+                            UserId = new Guid("44444444-4444-4444-4444-444444444444")
+                        });
                 });
 
             modelBuilder.Entity("Application.Domain.Cryptocurrency", b =>
@@ -214,6 +251,26 @@ namespace Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("33333333-3333-3333-3333-333333333333"),
+                            Email = "admin@cryptoexchange.com",
+                            FirstName = "Admin",
+                            LastName = "User",
+                            Password = "$2a$11$5ZTVKnDSNDH4yokJ4P2SeeysSQJHqi0LqI3dtSafW1AcB42/iemS.",
+                            Username = "admin"
+                        },
+                        new
+                        {
+                            Id = new Guid("44444444-4444-4444-4444-444444444444"),
+                            Email = "user@cryptoexchange.com",
+                            FirstName = "Regular",
+                            LastName = "User",
+                            Password = "$2a$11$UzjXUrqJKkTEsvXftrkiUeexQnRNu3bpk7JWM8jCIU7II.TlfRg42",
+                            Username = "user"
+                        });
                 });
 
             modelBuilder.Entity("RoleUser", b =>
@@ -229,17 +286,33 @@ namespace Data.Migrations
                     b.HasIndex("UsersId");
 
                     b.ToTable("RoleUser");
+
+                    b.HasData(
+                        new
+                        {
+                            RolesId = new Guid("11111111-1111-1111-1111-111111111111"),
+                            UsersId = new Guid("33333333-3333-3333-3333-333333333333")
+                        },
+                        new
+                        {
+                            RolesId = new Guid("22222222-2222-2222-2222-222222222222"),
+                            UsersId = new Guid("44444444-4444-4444-4444-444444444444")
+                        });
                 });
 
             modelBuilder.Entity("Application.Domain.Balance", b =>
                 {
                     b.HasOne("Application.Domain.Cryptocurrency", "Cryptocurrency")
                         .WithMany()
-                        .HasForeignKey("CryptocurrencyId");
+                        .HasForeignKey("CryptocurrencyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Application.Domain.User", "User")
                         .WithMany("Balances")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Cryptocurrency");
 

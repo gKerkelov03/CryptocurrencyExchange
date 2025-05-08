@@ -1,18 +1,24 @@
 using System.Windows;
 using System.Windows.Input;
+using Application.Abstractions;
+using Application.Domain;
 using Presentation.Commands;
+using Presentation.Windows;
+using SmartSalon.Application.ResultObject;
 
 namespace Presentation.ViewModels;
 
-public class LoginViewModel : ViewModelBase
+public class LoginViewModel : ViewModelBase, ITransientLifetime
 {
+    private readonly IUserService _userService;
     private string _username = string.Empty;
     private string _password = string.Empty;
 
     public ICommand LoginCommand { get; }
 
-    public LoginViewModel()
+    public LoginViewModel(IUserService userService)
     {
+        _userService = userService;
         LoginCommand = new LoginCommand(this);
     }
 
@@ -44,23 +50,26 @@ public class LoginViewModel : ViewModelBase
             return;
         }
 
-       
-            // var mainWindow = new MainWindow(_userService, user);
-            // mainWindow.Show();
-                    
-                    
-            //foreach (Window window in System.Windows.Application.Current.Windows)
-            //{
-            //    if (window is LoginWindow)
-            //    {
-            //        window.Close();
-            //        break;
-            //    }
-            //}
-                
-            
-            
-           // MessageBox.Show("Invalid username or password", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-        
+        var result = await _userService.LoginAsync(Username, Password);
+
+        if (result.IsSuccess)
+        {
+            var mainWindow = new MainWindow(result.Value, _userService);
+            mainWindow.Show();
+
+            foreach (Window window in System.Windows.Application.Current.Windows)
+            {
+                if (window is LoginWindow)
+                {
+                    window.Close();
+                    break;
+                }
+            }
+        }
+        else
+        {
+            var errorMessage = result.Errors?.FirstOrDefault()?.Description ?? "Invalid username or password";
+            MessageBox.Show(errorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
     }
 }

@@ -60,8 +60,8 @@ namespace Data.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Amount = table.Column<double>(type: "float", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    CryptocurrencyId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CryptocurrencyId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -70,12 +70,14 @@ namespace Data.Migrations
                         name: "FK_Balances_Cryptocurrencies_CryptocurrencyId",
                         column: x => x.CryptocurrencyId,
                         principalTable: "Cryptocurrencies",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Balances_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -131,6 +133,36 @@ namespace Data.Migrations
                 {
                     { new Guid("11111111-1111-1111-1111-111111111111"), "admin" },
                     { new Guid("22222222-2222-2222-2222-222222222222"), "user" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "Id", "Email", "FirstName", "LastName", "Password", "Username" },
+                values: new object[,]
+                {
+                    { new Guid("33333333-3333-3333-3333-333333333333"), "admin@cryptoexchange.com", "Admin", "User", "$2a$11$5ZTVKnDSNDH4yokJ4P2SeeysSQJHqi0LqI3dtSafW1AcB42/iemS.", "admin" },
+                    { new Guid("44444444-4444-4444-4444-444444444444"), "user@cryptoexchange.com", "Regular", "User", "$2a$11$UzjXUrqJKkTEsvXftrkiUeexQnRNu3bpk7JWM8jCIU7II.TlfRg42", "user" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Balances",
+                columns: new[] { "Id", "Amount", "CryptocurrencyId", "UserId" },
+                values: new object[,]
+                {
+                    { new Guid("55555555-5555-5555-5555-555555555555"), 1.5, new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new Guid("33333333-3333-3333-3333-333333333333") },
+                    { new Guid("66666666-6666-6666-6666-666666666666"), 10.0, new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), new Guid("33333333-3333-3333-3333-333333333333") },
+                    { new Guid("77777777-7777-7777-7777-777777777777"), 0.5, new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new Guid("44444444-4444-4444-4444-444444444444") },
+                    { new Guid("88888888-8888-8888-8888-888888888888"), 5.0, new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), new Guid("44444444-4444-4444-4444-444444444444") },
+                    { new Guid("99999999-9999-9999-9999-999999999999"), 1000.0, new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"), new Guid("44444444-4444-4444-4444-444444444444") }
+                });
+
+            migrationBuilder.InsertData(
+                table: "RoleUser",
+                columns: new[] { "RolesId", "UsersId" },
+                values: new object[,]
+                {
+                    { new Guid("11111111-1111-1111-1111-111111111111"), new Guid("33333333-3333-3333-3333-333333333333") },
+                    { new Guid("22222222-2222-2222-2222-222222222222"), new Guid("44444444-4444-4444-4444-444444444444") }
                 });
 
             migrationBuilder.CreateIndex(

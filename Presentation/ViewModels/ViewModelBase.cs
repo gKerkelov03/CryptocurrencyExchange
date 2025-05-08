@@ -1,10 +1,9 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using Application.Abstractions;
 
 namespace Presentation.ViewModels;
 
-public abstract class ViewModelBase : INotifyPropertyChanged, ITransientLifetime
+public abstract class ViewModelBase : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
 
