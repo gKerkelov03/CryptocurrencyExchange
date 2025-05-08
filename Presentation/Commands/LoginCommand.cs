@@ -30,7 +30,11 @@ public class LoginCommand : ICommand
             _isExecuting = true;
             RaiseCanExecuteChanged();
             
-            await _viewModel.LoginAsync();
+            var result = await _viewModel.LoginAsync();
+            if (!result)
+            {
+                System.Windows.MessageBox.Show("Invalid username or password", "Login Failed", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+            }
         }
         catch (Exception ex)
         {

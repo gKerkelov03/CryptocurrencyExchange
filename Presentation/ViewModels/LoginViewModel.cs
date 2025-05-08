@@ -74,7 +74,7 @@ public class LoginViewModel : ViewModelBase, ITransientLifetime
 
     public LoginCommand LoginCommand { get; }
 
-    public async Task LoginAsync()
+    public async Task<bool> LoginAsync()
     {
         try
         {
@@ -87,15 +87,18 @@ public class LoginViewModel : ViewModelBase, ITransientLifetime
                 var mainWindow = new MainWindow(_userService, _balanceService, _cryptoPriceService, result.Value);
                 mainWindow.Show();
                 System.Windows.Application.Current.Windows[0].Close();
+                return true;
             }
             else
             {
                 ErrorMessage = result.Errors?.FirstOrDefault()?.Description ?? "Invalid username or password";
+                return false;
             }
         }
         catch (Exception ex)
         {
             ErrorMessage = $"An error occurred: {ex.Message}";
+            return false;
         }
         finally
         {
