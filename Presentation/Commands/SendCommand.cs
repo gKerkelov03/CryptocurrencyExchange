@@ -12,20 +12,20 @@ public class SendCommand : ICommand
     private readonly User _currentUser;
     private readonly Action<Balance> _onBalanceSelected;
     private readonly Action<User> _onUserSelected;
-    private readonly Action<decimal> _onAmountChanged;
+    private readonly Action<double> _onAmountChanged;
     private readonly Action<string> _onError;
     private readonly Action _onSuccess;
 
     private Balance _selectedFromBalance;
     private User _selectedToUser;
-    private decimal _transferAmount;
+    private double _transferAmount;
 
     public SendCommand(
         IBalanceService balanceService,
         User currentUser,
         Action<Balance> onBalanceSelected,
         Action<User> onUserSelected,
-        Action<decimal> onAmountChanged,
+        Action<double> onAmountChanged,
         Action<string> onError,
         Action onSuccess)
     {
@@ -58,7 +58,7 @@ public class SendCommand : ICommand
         CommandManager.InvalidateRequerySuggested();
     }
 
-    public void UpdateAmount(decimal amount)
+    public void UpdateAmount(double amount)
     {
         _transferAmount = amount;
         _onAmountChanged?.Invoke(amount);
@@ -67,10 +67,16 @@ public class SendCommand : ICommand
 
     public bool CanExecute(object parameter)
     {
-        return _selectedFromBalance != null && 
-               _selectedToUser != null && 
-               _transferAmount > 0 && 
-               _transferAmount <= (decimal)_selectedFromBalance.Amount;
+        if (_selectedFromBalance == null || _selectedToUser == null)
+            return false;
+
+        if (_transferAmount <= 0)
+            return false;
+
+        if (_selectedFromBalance.Amount < _transferAmount)
+            return false;
+
+        return true;
     }
 
     public async void Execute(object parameter)

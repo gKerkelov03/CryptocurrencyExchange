@@ -22,45 +22,62 @@ public class BalanceService : IBalanceService
 
     public async Task<IEnumerable<Balance>> GetUserBalancesAsync(Guid userId)
     {
-        return await _balanceRepository.FindAllAsync(b => b.UserId == userId);
+        try
+        {
+            var balances = await _balanceRepository.FindAllAsync(b => b.UserId == userId);
+            return balances.Where(b => b.Cryptocurrency != null);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"Error retrieving user balances: {ex.Message}", ex);
+        }
     }
 
     public async Task TransferAsync(TransferRequest request)
     {
-        // Get the balances involved in the transfer
-        var fromBalance = await _balanceRepository.FirstOrDefaultAsync(b => 
-            b.UserId == request.FromUserId && 
-            b.CryptocurrencyId == request.CryptocurrencyId);
-
-        var toBalance = await _balanceRepository.FirstOrDefaultAsync(b => 
-            b.UserId == request.ToUserId && 
-            b.CryptocurrencyId == request.CryptocurrencyId);
-
-        // Validate the transfer
-        if (fromBalance == null)
-            throw new InvalidOperationException("Sender does not have a balance for this cryptocurrency.");
-
-        if ((decimal)fromBalance.Amount < request.Amount)
-            throw new InvalidOperationException("Insufficient balance for transfer.");
-
-        // Create toBalance if it doesn't exist
-        if (toBalance == null)
+        try
         {
-            toBalance = new Balance
+            var fromBalance = await _balanceRepository.FirstOrDefaultAsync(b => 
+                b.UserId == request.FromUserId && 
+                b.CryptocurrencyId == request.CryptocurrencyId);
+
+            if (fromBalance == null)
+                throw new InvalidOperationException("Sender does not have a balance for this cryptocurrency.");
+
+            if (fromBalance.Cryptocurrency == null)
+                throw new InvalidOperationException("Cryptocurrency information is missing.");
+
+            var toBalance = await _balanceRepository.FirstOrDefaultAsync(b => 
+                b.UserId == request.ToUserId && 
+                b.CryptocurrencyId == request.CryptocurrencyId);
+
+            // Validate the transfer
+            if (fromBalance.Amount < request.Amount)
+                throw new InvalidOperationException($"Insufficient balance for transfer. Available: {fromBalance.Amount} {fromBalance.Cryptocurrency.Name}");
+
+            // Create toBalance if it doesn't exist
+            if (toBalance == null)
             {
-                UserId = request.ToUserId,
-                CryptocurrencyId = request.CryptocurrencyId,
-                Amount = 0
-            };
-            await _balanceRepository.AddAsync(toBalance);
+                toBalance = new Balance
+                {
+                    UserId = request.ToUserId,
+                    CryptocurrencyId = request.CryptocurrencyId,
+                    Amount = 0
+                };
+                await _balanceRepository.AddAsync(toBalance);
+            }
+
+            // Perform the transfer
+            fromBalance.Amount -= request.Amount;
+            toBalance.Amount += request.Amount;
+
+            // Update both balances
+            _balanceRepository.Update(fromBalance);
+            _balanceRepository.Update(toBalance);
         }
-
-        // Perform the transfer
-        fromBalance.Amount = (double)((decimal)fromBalance.Amount - request.Amount);
-        toBalance.Amount = (double)((decimal)toBalance.Amount + request.Amount);
-
-        // Update both balances
-        _balanceRepository.Update(fromBalance);
-        _balanceRepository.Update(toBalance);
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"Transfer failed: {ex.Message}", ex);
+        }
     }
 } 

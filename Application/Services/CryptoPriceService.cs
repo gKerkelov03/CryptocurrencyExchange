@@ -12,7 +12,7 @@ public class CryptoPriceService : ICryptoPriceService
         _httpClient = httpClient;
     }
 
-    public async Task<Dictionary<string, Dictionary<string, decimal>>> GetCryptoPricesAsync(string[] coinIds, string vsCurrency)
+    public async Task<Dictionary<string, Dictionary<string, double>>> GetCryptoPricesAsync(string[] coinIds, string vsCurrency)
     {
         string ids = string.Join(",", coinIds);
         string url = $"https://api.coingecko.com/api/v3/simple/price?ids={ids}&vs_currencies={vsCurrency}";
@@ -24,7 +24,7 @@ public class CryptoPriceService : ICryptoPriceService
         }
             
         string json = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, decimal>>>(json);
+        var result = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, double>>>(json);
         return result;
     }
 }

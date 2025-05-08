@@ -21,7 +21,8 @@ public class MainViewModel : ViewModelBase
     private string _errorMessage;
     private Balance _selectedFromBalance;
     private User _selectedToUser;
-    private decimal _transferAmount;
+    private double _transferAmount;
+    private bool _isUpdating;
 
     public MainViewModel(IUserService userService, IBalanceService balanceService, User currentUser)
     {
@@ -52,9 +53,20 @@ public class MainViewModel : ViewModelBase
         get => _selectedFromBalance;
         set
         {
-            _selectedFromBalance = value;
-            ((SendCommand)SendCommand).UpdateSelectedBalance(value);
-            OnPropertyChanged();
+            if (_isUpdating) return;
+            _isUpdating = true;
+            try
+            {
+                if (SetProperty(ref _selectedFromBalance, value))
+                {
+                    ((SendCommand)SendCommand).UpdateSelectedBalance(value);
+                    CommandManager.InvalidateRequerySuggested();
+                }
+            }
+            finally
+            {
+                _isUpdating = false;
+            }
         }
     }
 
@@ -63,31 +75,49 @@ public class MainViewModel : ViewModelBase
         get => _selectedToUser;
         set
         {
-            _selectedToUser = value;
-            ((SendCommand)SendCommand).UpdateSelectedUser(value);
-            OnPropertyChanged();
+            if (_isUpdating) return;
+            _isUpdating = true;
+            try
+            {
+                if (SetProperty(ref _selectedToUser, value))
+                {
+                    ((SendCommand)SendCommand).UpdateSelectedUser(value);
+                    CommandManager.InvalidateRequerySuggested();
+                }
+            }
+            finally
+            {
+                _isUpdating = false;
+            }
         }
     }
 
-    public decimal TransferAmount
+    public double TransferAmount
     {
         get => _transferAmount;
         set
         {
-            _transferAmount = value;
-            ((SendCommand)SendCommand).UpdateAmount(value);
-            OnPropertyChanged();
+            if (_isUpdating) return;
+            _isUpdating = true;
+            try
+            {
+                if (SetProperty(ref _transferAmount, value))
+                {
+                    ((SendCommand)SendCommand).UpdateAmount(value);
+                    CommandManager.InvalidateRequerySuggested();
+                }
+            }
+            finally
+            {
+                _isUpdating = false;
+            }
         }
     }
 
     public string ErrorMessage
     {
         get => _errorMessage;
-        set
-        {
-            _errorMessage = value;
-            OnPropertyChanged();
-        }
+        set => SetProperty(ref _errorMessage, value);
     }
 
     public ICommand LogoutCommand { get; }
