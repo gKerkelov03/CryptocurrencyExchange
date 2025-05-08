@@ -1,5 +1,4 @@
-﻿
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using Application.Domain.Base;
 using SmartSalon.Application.ResultObject;
 
@@ -20,4 +19,6 @@ public interface IEfRepository<TEntity> : ITransientLifetime where TEntity : IBa
     Task<Result> UpdateByIdAsync(Guid id, TEntity newEntity);
 
     Task<Result> RemoveByIdAsync(Guid id);
+
+    Task SaveChangesAsync();
 }

@@ -1,8 +1,7 @@
-using System;
-using System.Windows;
 using System.Windows.Input;
 using Application.Abstractions;
 using Application.Domain;
+using Application.Models;
 
 namespace Presentation.Commands;
 

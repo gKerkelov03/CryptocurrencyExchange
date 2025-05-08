@@ -6,6 +6,7 @@ using Application.Abstractions;
 using Application.Domain;
 using Application.Domain.Base;
 using Application.Errors;
+using Application.Models;
 using Microsoft.EntityFrameworkCore;
 using SmartSalon.Application.ResultObject;
 
@@ -74,6 +75,9 @@ public class BalanceService : IBalanceService
             // Update both balances
             _balanceRepository.Update(fromBalance);
             _balanceRepository.Update(toBalance);
+
+            // Save all changes
+            await _balanceRepository.SaveChangesAsync();
         }
         catch (Exception ex)
         {

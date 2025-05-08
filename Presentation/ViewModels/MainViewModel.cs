@@ -24,6 +24,10 @@ public class MainViewModel : ViewModelBase
     private double _transferAmount;
     private bool _isUpdating;
 
+    public ICommand LogoutCommand { get; }
+    public ICommand ExitCommand { get; }
+    public ICommand SendCommand { get; }
+
     public MainViewModel(IUserService userService, IBalanceService balanceService, User currentUser)
     {
         _userService = userService;
@@ -120,9 +124,6 @@ public class MainViewModel : ViewModelBase
         set => SetProperty(ref _errorMessage, value);
     }
 
-    public ICommand LogoutCommand { get; }
-    public ICommand ExitCommand { get; }
-    public ICommand SendCommand { get; }
 
     private async void LoadData()
     {

@@ -25,9 +25,15 @@ public class Repository<TEntity>(DatabaseContext _dbContext) : IEfRepository<TEn
     public async Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate)
         => await _dbSet.IncludeAll().Where(predicate).ToListAsync();
 
-    public async Task AddAsync(TEntity entity) => await _dbSet.AddAsync(entity);
+    public async Task AddAsync(TEntity entity)
+    {
+        await _dbSet.AddAsync(entity);
+    }
 
-    public async Task AddRangeAsync(IEnumerable<TEntity> entities) => await _dbSet.AddRangeAsync(entities);
+    public async Task AddRangeAsync(IEnumerable<TEntity> entities)
+    {
+        await _dbSet.AddRangeAsync(entities);
+    }
 
     public async Task<Result> RemoveByIdAsync(Guid id)
     {
@@ -39,7 +45,6 @@ public class Repository<TEntity>(DatabaseContext _dbContext) : IEfRepository<TEn
         }
 
         _dbSet.Remove(entity);
-
         return Result.Success();
     }
 
@@ -56,7 +61,15 @@ public class Repository<TEntity>(DatabaseContext _dbContext) : IEfRepository<TEn
         return Result.Success();
     }
 
-    public void Update(TEntity newEntity) => _dbSet.Update(newEntity);
+    public void Update(TEntity newEntity)
+    {
+        _dbSet.Update(newEntity);
+    }
+
+    public async Task SaveChangesAsync()
+    {
+        await _dbContext.SaveChangesAsync();
+    }
 }
 
 public static class DbSetExtensions
