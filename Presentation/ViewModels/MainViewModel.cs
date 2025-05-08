@@ -50,7 +50,7 @@ public class MainViewModel : ViewModelBase
             this
         );
 
-        LoadData();
+        LoadDataAsync();
     }
 
     public ObservableCollection<Balance> NonZeroBalances { get; } = new();
@@ -182,10 +182,5 @@ public class MainViewModel : ViewModelBase
         {
             ErrorMessage = $"Error loading data: {ex.Message}";
         }
-    }
-
-    private async void LoadData()
-    {
-        await LoadDataAsync();
     }
 } 
