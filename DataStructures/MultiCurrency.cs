@@ -1,3 +1,4 @@
+using System.Reflection;
 using DataStructures.Cryptos;
 
 namespace DataStructures;
@@ -61,14 +62,13 @@ public struct MultiCurrency
         }
         else
         {
-            copy[typeof(TCurrency)] = new SingleCurrency<TCurrency>(-amount.GetAmount());
+            copy[typeof(TCurrency)] = new SingleCurrency<TCurrency>(-amount.GetAmount<TCurrency>());
         }
 
         return new MultiCurrency(copy);
     }
 
-    public SingleCurrency<TTarget> ConvertTo<TTarget>(Dictionary<Type, double> exchangeRates)
-        where TTarget : ICrypto
+    public SingleCurrency<TTarget> ConvertTo<TTarget>(Dictionary<Type, double> exchangeRates) where TTarget : ICrypto
     {
         double total = 0;
 
@@ -80,48 +80,36 @@ public struct MultiCurrency
             if (currencyType == typeof(TTarget))
             {
                 var same = (SingleCurrency<TTarget>)rawAmount;
-                total += same.GetAmount();
+                total += same.GetAmount<TTarget>();
             }
             else
             {
                 if (!exchangeRates.TryGetValue(currencyType, out var rate))
                     throw new InvalidOperationException($"Missing exchange rate for {currencyType.Name}");
 
-                var method = typeof(MultiCurrency).GetMethod(nameof(ConvertCurrency), System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)
+                var method = typeof(MultiCurrency).GetMethod(nameof(ConvertCurrency), BindingFlags.NonPublic | BindingFlags.Static)
                     .MakeGenericMethod(currencyType, typeof(TTarget));
 
-                double converted = (double)method.Invoke(null, new[] { rawAmount, rate });
+                double converted = (double)method.Invoke(null, [rawAmount, rate]);
                 total += converted;
             }
         }
 
         return new SingleCurrency<TTarget>(total);
     }
-
-    private static double ConvertCurrency<TFrom, TTo>(object amountObj, double rate)
-        where TFrom : ICrypto
-        where TTo : ICrypto
-    {
-        var from = (SingleCurrency<TFrom>)amountObj;
-        return from.ConvertTo<TTo>(rate).GetAmount();
-    }
+    private static double ConvertCurrency<TFrom, TTo>(object amountObj, double rate) where TFrom : ICrypto where TTo : ICrypto
+        => ((SingleCurrency<TFrom>)amountObj).ConvertTo<TTo>(rate).GetAmount<TTo>();
 
     public override string ToString()
-    {
-        return string.Join(", ", _amounts.Select(kvp =>
+        => string.Join(", ", _amounts.Select(kvp =>
         {
             var currencyName = kvp.Key.Name;
-            var method = typeof(MultiCurrency).GetMethod(nameof(GetDisplayValue), System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)
+            var method = typeof(MultiCurrency).GetMethod(nameof(GetDisplayValue), BindingFlags.NonPublic | BindingFlags.Static)
                 .MakeGenericMethod(kvp.Key);
 
-            return $"{method.Invoke(null, new[] { kvp.Value })} {currencyName}";
+            return $"{method.Invoke(null, [kvp.Value])} {currencyName}";
         }));
-    }
 
-    private static string GetDisplayValue<TCurrency>(object obj)
-        where TCurrency : ICrypto
-    {
-        var amount = (SingleCurrency<TCurrency>)obj;
-        return amount.GetAmount().ToString("0.##");
-    }
+    private static string GetDisplayValue<TCurrency>(object obj) where TCurrency : ICrypto
+        => ((SingleCurrency<TCurrency>)obj).GetAmount<TCurrency>().ToString("0.##");
 }

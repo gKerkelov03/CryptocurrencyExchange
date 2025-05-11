@@ -29,4 +29,6 @@ public readonly struct SingleCurrency<TCurrency> where TCurrency : ICrypto
 
     public override bool Equals(object obj)
         => obj is SingleCurrency<TCurrency> other && this == other;
+
+    public override int GetHashCode() => typeof(TCurrency).GetHashCode() + _amount.GetHashCode();
 }
