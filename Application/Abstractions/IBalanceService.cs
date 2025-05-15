@@ -1,4 +1,5 @@
 using Application.DataStructures;
+using Application.Domain;
 using Application.Models;
 
 namespace Application.Abstractions;
@@ -9,5 +10,5 @@ public interface IBalanceService : ITransientLifetime
 
     Task<SingleCurrency<Usd>> CalculateTheTotalBalanceInUsd(Guid userId);
 
-    Task<Dictionary<string, string>> GetBalancesToDisplay(Guid userId);
+    Task<IEnumerable<Balance>> GetBalancesToDisplay(Guid userId);
 } 

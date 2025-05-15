@@ -1,3 +1,4 @@
+using System.Net.NetworkInformation;
 using Application.Abstractions;
 using Application.DataStructures;
 using Application.Domain;
@@ -8,12 +9,12 @@ namespace Application.Services;
 public class BalanceService : IBalanceService
 {
     private readonly IEfRepository<Balance> _balanceRepository;
-    private readonly ICryptoPriceService _cryptoPriceService;
+    private readonly ICurrencyPriceService _currencyPriceService;
 
-    public BalanceService(IEfRepository<Balance> balanceRepository, ICryptoPriceService cryptoPriceService)
+    public BalanceService(IEfRepository<Balance> balanceRepository, ICurrencyPriceService currencyPriceService)
     {
         _balanceRepository = balanceRepository;
-        _cryptoPriceService = cryptoPriceService;
+        _currencyPriceService = currencyPriceService;
     }
 
     public async Task<SingleCurrency<Usd>> CalculateTheTotalBalanceInUsd(Guid userId)
@@ -22,33 +23,43 @@ public class BalanceService : IBalanceService
         var balances = await _balanceRepository.FindAllAsync(b => b.UserId == userId);
 
         var cryptoIds = balances.Select(b => b?.Cryptocurrency?.CryptocurrencyId).Where(id => id != null).ToArray();
-        var prices = await _cryptoPriceService.GetCryptoPricesAsync(cryptoIds, vsCurrency);
-
-        double total = 0;
+        var prices = await _currencyPriceService.GetCryptoPricesAsync(cryptoIds, vsCurrency);
+        var exchangeRates = new Dictionary<Type, double>();
+        var total = new MultiCurrency();
 
         foreach (var balance in balances)
         {
-            total += balance.Amount * prices[balance!.Cryptocurrency!.CryptocurrencyId];
+            if (balance!.Cryptocurrency!.CryptocurrencyId == Bitcoin.CryptocurrencyId)
+            {
+                total += new SingleCurrency<Bitcoin>(balance.Amount);
+                exchangeRates.Add(typeof(Bitcoin), prices[Bitcoin.CryptocurrencyId]);
+            }
+            else if (balance!.Cryptocurrency!.CryptocurrencyId == Ethereum.CryptocurrencyId)
+            {
+                total += new SingleCurrency<Ethereum>(balance.Amount);
+                exchangeRates.Add(typeof(Ethereum), prices[Ethereum.CryptocurrencyId]);
+            }
+            else if (balance!.Cryptocurrency!.CryptocurrencyId == Solana.CryptocurrencyId)
+            { 
+                total += new SingleCurrency<Solana>(balance.Amount);
+                exchangeRates.Add(typeof(Solana), prices[Solana.CryptocurrencyId]);
+            }
         }
 
-        var totalInUsd = new SingleCurrency<Usd>(total);
+        
+        var totalInUsd = total.ConvertTo<Usd>(exchangeRates);
 
         return totalInUsd;
     }
 
-    public async Task<Dictionary<string, string>> GetBalancesToDisplay(Guid userId)
-    {
-        var balances = await _balanceRepository.FindAllAsync(b => b.UserId == userId);
-
-        return balances.ToDictionary(b => b!.Cryptocurrency!.Name, b => b.Amount.ToString());
-    }
+    public async Task<IEnumerable<Balance>> GetBalancesToDisplay(Guid userId) => await _balanceRepository.FindAllAsync(b => b.UserId == userId);
 
     public async Task TransferAsync(TransferRequest request)
     {
         try
         {
-            var fromBalance = await _balanceRepository.FirstOrDefaultAsync(b => 
-                b.UserId == request.FromUserId && 
+            var fromBalance = await _balanceRepository.FirstOrDefaultAsync(b =>
+                b.UserId == request.FromUserId &&
                 b.CryptocurrencyId == request.CryptocurrencyId);
 
             if (fromBalance == null)
@@ -57,8 +68,8 @@ public class BalanceService : IBalanceService
             if (fromBalance.Cryptocurrency == null)
                 throw new InvalidOperationException("Cryptocurrency information is missing.");
 
-            var toBalance = await _balanceRepository.FirstOrDefaultAsync(b => 
-                b.UserId == request.ToUserId && 
+            var toBalance = await _balanceRepository.FirstOrDefaultAsync(b =>
+                b.UserId == request.ToUserId &&
                 b.CryptocurrencyId == request.CryptocurrencyId);
 
             if (fromBalance.Amount < request.Amount)
@@ -88,4 +99,4 @@ public class BalanceService : IBalanceService
             throw new InvalidOperationException($"Transfer failed: {ex.Message}", ex);
         }
     }
-} 
+}

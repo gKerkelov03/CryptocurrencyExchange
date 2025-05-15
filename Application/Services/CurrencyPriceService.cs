@@ -3,11 +3,11 @@ using Newtonsoft.Json;
 
 namespace Application.Services;
 
-public class CryptoPriceService : ICryptoPriceService
+public class CurrencyPriceService : ICurrencyPriceService
 {
     private readonly HttpClient _httpClient;
 
-    public CryptoPriceService(HttpClient httpClient) => _httpClient = httpClient;
+    public CurrencyPriceService(HttpClient httpClient) => _httpClient = httpClient;
 
     public async Task<Dictionary<string, double>> GetCryptoPricesAsync(string[] coinIds, string vsCurrency)
     {

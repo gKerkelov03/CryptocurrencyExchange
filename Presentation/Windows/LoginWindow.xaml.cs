@@ -9,15 +9,15 @@ public partial class LoginWindow : Window, ITransientLifetime
 {
     private readonly IUserService _userService;
     private readonly IBalanceService _balanceService;
-    private readonly ICryptoPriceService _cryptoPriceService;
+    private readonly ICurrencyPriceService _currencyPriceService;
 
-    public LoginWindow(IUserService userService, IBalanceService balanceService, ICryptoPriceService cryptoPriceService)
+    public LoginWindow(IUserService userService, IBalanceService balanceService, ICurrencyPriceService currencyPriceService)
     {
         InitializeComponent();
         _userService = userService;
         _balanceService = balanceService;
-        _cryptoPriceService = cryptoPriceService;
-        DataContext = new LoginViewModel(userService, balanceService, cryptoPriceService);
+        _currencyPriceService = currencyPriceService;
+        DataContext = new LoginViewModel(userService, balanceService, currencyPriceService);
     }
 
     private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)

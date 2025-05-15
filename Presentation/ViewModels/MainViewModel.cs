@@ -18,7 +18,7 @@ public class MainViewModel : ViewModelBase
 {
     private readonly IUserService _userService;
     private readonly IBalanceService _balanceService;
-    private readonly ICryptoPriceService _cryptoPriceService;
+    private readonly ICurrencyPriceService _currencyPriceService;
     private User _currentUser;
     private string _errorMessage;
     private Balance _selectedFromBalance;
@@ -31,14 +31,14 @@ public class MainViewModel : ViewModelBase
     public ICommand ExitCommand { get; }
     public ICommand SendCommand { get; }
 
-    public MainViewModel(IUserService userService, IBalanceService balanceService, ICryptoPriceService cryptoPriceService, User currentUser)
+    public MainViewModel(IUserService userService, IBalanceService balanceService, ICurrencyPriceService currencyPriceService, User currentUser)
     {
         _userService = userService;
         _balanceService = balanceService;
-        _cryptoPriceService = cryptoPriceService;
+        _currencyPriceService = currencyPriceService;
         _currentUser = currentUser;
 
-        LogoutCommand = new LogoutCommand(userService, balanceService, cryptoPriceService);
+        LogoutCommand = new LogoutCommand(userService, balanceService, currencyPriceService);
         ExitCommand = new ExitCommand();
         SendCommand = new SendCommand(
             balanceService,
@@ -54,7 +54,7 @@ public class MainViewModel : ViewModelBase
         LoadDataAsync();
     }
 
-    public ObservableCollection<KeyValuePair<string, string>> Balances { get; } = new();
+    public ObservableCollection<Balance> Balances { get; } = new();
     public ObservableCollection<User> OtherUsers { get; } = new();
 
     public double TotalBalance
@@ -166,9 +166,9 @@ public class MainViewModel : ViewModelBase
 
         Balances.Clear();
 
-        foreach (var kvp in balances)
+        foreach (var balance in balances)
         {
-            Balances.Add(kvp);
+            Balances.Add(balance);
         }
     }
 } 

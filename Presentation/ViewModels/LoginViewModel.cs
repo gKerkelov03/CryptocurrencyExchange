@@ -15,17 +15,17 @@ public class LoginViewModel : ViewModelBase, ITransientLifetime
 {
     private readonly IUserService _userService;
     private readonly IBalanceService _balanceService;
-    private readonly ICryptoPriceService _cryptoPriceService;
+    private readonly ICurrencyPriceService _currencyPriceService;
     private string _username = string.Empty;
     private string _password = string.Empty;
     private string _errorMessage = string.Empty;
     private bool _isLoading;
 
-    public LoginViewModel(IUserService userService, IBalanceService balanceService, ICryptoPriceService cryptoPriceService)
+    public LoginViewModel(IUserService userService, IBalanceService balanceService, ICurrencyPriceService currencyPriceService)
     {
         _userService = userService;
         _balanceService = balanceService;
-        _cryptoPriceService = cryptoPriceService;
+        _currencyPriceService = currencyPriceService;
         LoginCommand = new LoginCommand(this);
     }
 
@@ -84,7 +84,7 @@ public class LoginViewModel : ViewModelBase, ITransientLifetime
             var result = await _userService.LoginAsync(Username, Password);
             if (result.IsSuccess)
             {
-                var mainWindow = new MainWindow(_userService, _balanceService, _cryptoPriceService, result.Value);
+                var mainWindow = new MainWindow(_userService, _balanceService, _currencyPriceService, result.Value);
                 mainWindow.Show();
                 System.Windows.Application.Current.Windows[0].Close();
                 return true;
