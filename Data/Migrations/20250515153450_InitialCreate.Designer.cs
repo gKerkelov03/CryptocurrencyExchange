@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250508083022_Initial")]
-    partial class Initial
+    [Migration("20250515153450_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -81,7 +81,7 @@ namespace Data.Migrations
                         {
                             Id = new Guid("99999999-9999-9999-9999-999999999999"),
                             Amount = 1000.0,
-                            CryptocurrencyId = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"),
+                            CryptocurrencyId = new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"),
                             UserId = new Guid("44444444-4444-4444-4444-444444444444")
                         });
                 });
@@ -120,81 +120,9 @@ namespace Data.Migrations
                         },
                         new
                         {
-                            Id = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"),
-                            CryptocurrencyId = "tether",
-                            Name = "Tether"
-                        },
-                        new
-                        {
-                            Id = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd"),
-                            CryptocurrencyId = "ripple",
-                            Name = "XRP"
-                        },
-                        new
-                        {
-                            Id = new Guid("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"),
-                            CryptocurrencyId = "binancecoin",
-                            Name = "BNB"
-                        },
-                        new
-                        {
                             Id = new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"),
                             CryptocurrencyId = "solana",
                             Name = "Solana"
-                        },
-                        new
-                        {
-                            Id = new Guid("11111111-2222-3333-4444-555555555555"),
-                            CryptocurrencyId = "usd-coin",
-                            Name = "USD Coin"
-                        },
-                        new
-                        {
-                            Id = new Guid("66666666-7777-8888-9999-000000000000"),
-                            CryptocurrencyId = "dogecoin",
-                            Name = "Dogecoin"
-                        },
-                        new
-                        {
-                            Id = new Guid("12345678-1234-1234-1234-123456789abc"),
-                            CryptocurrencyId = "cardano",
-                            Name = "Cardano"
-                        },
-                        new
-                        {
-                            Id = new Guid("abcdefab-cdef-cdef-cdef-abcdefabcdef"),
-                            CryptocurrencyId = "tron",
-                            Name = "TRON"
-                        },
-                        new
-                        {
-                            Id = new Guid("fedcbafe-dcba-dcba-dcba-fedcbafedcba"),
-                            CryptocurrencyId = "wrapped-bitcoin",
-                            Name = "Wrapped Bitcoin"
-                        },
-                        new
-                        {
-                            Id = new Guid("aabbccdd-eeff-0011-2233-445566778899"),
-                            CryptocurrencyId = "chainlink",
-                            Name = "Chainlink"
-                        },
-                        new
-                        {
-                            Id = new Guid("99887766-5544-3322-1100-aabbccddeeff"),
-                            CryptocurrencyId = "avalanche-2",
-                            Name = "Avalanche"
-                        },
-                        new
-                        {
-                            Id = new Guid("deadbeef-dead-beef-dead-deadbeefdead"),
-                            CryptocurrencyId = "stellar",
-                            Name = "Stellar"
-                        },
-                        new
-                        {
-                            Id = new Guid("beadfeed-bead-feed-bead-beadfeedbead"),
-                            CryptocurrencyId = "shiba-inu",
-                            Name = "Shiba Inu"
                         });
                 });
 

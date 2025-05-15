@@ -59,8 +59,5 @@ public class UserService : IUserService
         return _passwordHasher.VerifyPassword(password, user.Password);
     }
 
-    public async Task<IEnumerable<User>> GetAllUsersAsync()
-    {
-        return await _userRepository.FindAllAsync(u => true);
-    }
+    public async Task<IEnumerable<User>> GetAllUsersAsync() => await _userRepository.FindAllAsync(u => true);
 } 

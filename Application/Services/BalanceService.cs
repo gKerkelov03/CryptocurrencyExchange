@@ -1,14 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Application.Abstractions;
 using Application.Domain;
-using Application.Domain.Base;
-using Application.Errors;
 using Application.Models;
-using Microsoft.EntityFrameworkCore;
-using SmartSalon.Application.ResultObject;
 
 namespace Application.Services;
 
@@ -16,10 +8,7 @@ public class BalanceService : IBalanceService
 {
     private readonly IEfRepository<Balance> _balanceRepository;
 
-    public BalanceService(IEfRepository<Balance> balanceRepository)
-    {
-        _balanceRepository = balanceRepository;
-    }
+    public BalanceService(IEfRepository<Balance> balanceRepository) => _balanceRepository = balanceRepository;
 
     public async Task<IEnumerable<Balance>> GetUserBalancesAsync(Guid userId)
     {
@@ -52,11 +41,9 @@ public class BalanceService : IBalanceService
                 b.UserId == request.ToUserId && 
                 b.CryptocurrencyId == request.CryptocurrencyId);
 
-            // Validate the transfer
             if (fromBalance.Amount < request.Amount)
                 throw new InvalidOperationException($"Insufficient balance for transfer. Available: {fromBalance.Amount} {fromBalance.Cryptocurrency.Name}");
 
-            // Create toBalance if it doesn't exist
             if (toBalance == null)
             {
                 toBalance = new Balance
@@ -68,15 +55,12 @@ public class BalanceService : IBalanceService
                 await _balanceRepository.AddAsync(toBalance);
             }
 
-            // Perform the transfer
             fromBalance.Amount -= request.Amount;
             toBalance.Amount += request.Amount;
 
-            // Update both balances
             _balanceRepository.Update(fromBalance);
             _balanceRepository.Update(toBalance);
 
-            // Save all changes
             await _balanceRepository.SaveChangesAsync();
         }
         catch (Exception ex)

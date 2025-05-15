@@ -2,5 +2,5 @@
 
 public interface ICryptoPriceService : ITransientLifetime
 {
-    Task<Dictionary<string, Dictionary<string, double>>> GetCryptoPricesAsync(string[] cryptoIds, string outputCurrency);
+    Task<Dictionary<string, double>> GetCryptoPricesAsync(string[] cryptoIds, string outputCurrency);
 }

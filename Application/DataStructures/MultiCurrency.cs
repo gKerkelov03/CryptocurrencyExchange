@@ -1,7 +1,7 @@
 using System.Reflection;
-using DataStructures.Cryptos;
+using Application.Abstractions;
 
-namespace DataStructures;
+namespace Application.DataStructures;
 
 public struct MultiCurrency
 {

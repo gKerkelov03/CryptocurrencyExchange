@@ -138,49 +138,59 @@ public class MainViewModel : ViewModelBase
     {
         try
         {
-            // Load non-zero balances
-            var balances = await _balanceService.GetUserBalancesAsync(_currentUser.Id);
-            NonZeroBalances.Clear();
-            foreach (var balance in balances.Where(b => b.Amount > 0))
-            {
-                NonZeroBalances.Add(balance);
-            }
-
-            // Calculate total balance in USD
-            if (NonZeroBalances.Any())
-            {
-                var cryptoIds = NonZeroBalances.Select(b => b.Cryptocurrency?.CryptocurrencyId).Where(id => id != null).ToArray();
-                var prices = await _cryptoPriceService.GetCryptoPricesAsync(cryptoIds, "usd");
-                
-                double total = 0;
-                foreach (var balance in NonZeroBalances)
-                {
-                    if (balance.Cryptocurrency != null && prices.TryGetValue(balance.Cryptocurrency.CryptocurrencyId, out var currencyPrices))
-                    {
-                        if (currencyPrices.TryGetValue("usd", out var price))
-                        {
-                            total += balance.Amount * price;
-                        }
-                    }
-                }
-                TotalBalance = total;
-            }
-            else
-            {
-                TotalBalance = 0;
-            }
-
-            // Load other users
-            var users = await _userService.GetAllUsersAsync();
-            OtherUsers.Clear();
-            foreach (var user in users.Where(u => u.Id != _currentUser.Id))
-            {
-                OtherUsers.Add(user);
-            }
+           await LoadNonZeroBalances();
+           CalculateUserBalanceInUsd();
+           LoadOtherUsers();
         }
         catch (Exception ex)
         {
             ErrorMessage = $"Error loading data: {ex.Message}";
+        }
+    }
+
+    private async void LoadOtherUsers()
+    {
+        var users = await _userService.GetAllUsersAsync();
+        OtherUsers.Clear();
+
+        foreach (var user in users.Where(u => u.Id != _currentUser.Id))
+        {
+            OtherUsers.Add(user);
+        }
+    }
+
+    private async void CalculateUserBalanceInUsd()
+    {
+        if (NonZeroBalances.Any())
+        {
+            var vsCurrency = "usd";
+            var cryptoIds = NonZeroBalances.Select(b => b?.Cryptocurrency?.CryptocurrencyId).Where(id => id != null).ToArray();
+            var prices = await _cryptoPriceService.GetCryptoPricesAsync(cryptoIds, vsCurrency);
+
+            double total = 0;
+
+            foreach (var balance in NonZeroBalances)
+            {
+                total += balance.Amount * prices[balance!.Cryptocurrency!.CryptocurrencyId];
+            }
+
+            TotalBalance = total;
+        }
+        else
+        {
+            TotalBalance = 0;
+        }
+    }
+
+    private async Task LoadNonZeroBalances()
+    {
+        var balances = await _balanceService.GetUserBalancesAsync(_currentUser.Id);
+
+        NonZeroBalances.Clear();
+
+        foreach (var balance in balances.Where(b => b.Amount > 0))
+        {
+            NonZeroBalances.Add(balance);
         }
     }
 } 

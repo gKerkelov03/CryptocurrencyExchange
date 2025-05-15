@@ -1,6 +1,6 @@
-using DataStructures.Cryptos;
+using Application.Abstractions;
 
-namespace DataStructures;
+namespace Application.DataStructures;
 public readonly struct SingleCurrency<TCurrency> where TCurrency : ICrypto
 {
     private readonly double _amount;

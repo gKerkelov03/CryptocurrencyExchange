@@ -40,19 +40,7 @@ public class DatabaseContext : DbContext, ITransientLifetime
         modelBuilder.Entity<Cryptocurrency>().HasData(
             new Cryptocurrency { Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), Name = "Bitcoin", CryptocurrencyId = "bitcoin" },
             new Cryptocurrency { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), Name = "Ethereum", CryptocurrencyId = "ethereum" },
-            new Cryptocurrency { Id = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"), Name = "Tether", CryptocurrencyId = "tether" },
-            new Cryptocurrency { Id = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd"), Name = "XRP", CryptocurrencyId = "ripple" },
-            new Cryptocurrency { Id = new Guid("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"), Name = "BNB", CryptocurrencyId = "binancecoin" },
-            new Cryptocurrency { Id = new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"), Name = "Solana", CryptocurrencyId = "solana" },
-            new Cryptocurrency { Id = new Guid("11111111-2222-3333-4444-555555555555"), Name = "USD Coin", CryptocurrencyId = "usd-coin" },
-            new Cryptocurrency { Id = new Guid("66666666-7777-8888-9999-000000000000"), Name = "Dogecoin", CryptocurrencyId = "dogecoin" },
-            new Cryptocurrency { Id = new Guid("12345678-1234-1234-1234-123456789abc"), Name = "Cardano", CryptocurrencyId = "cardano" },
-            new Cryptocurrency { Id = new Guid("abcdefab-cdef-cdef-cdef-abcdefabcdef"), Name = "TRON", CryptocurrencyId = "tron" },
-            new Cryptocurrency { Id = new Guid("fedcbafe-dcba-dcba-dcba-fedcbafedcba"), Name = "Wrapped Bitcoin", CryptocurrencyId = "wrapped-bitcoin" },
-            new Cryptocurrency { Id = new Guid("aabbccdd-eeff-0011-2233-445566778899"), Name = "Chainlink", CryptocurrencyId = "chainlink" },
-            new Cryptocurrency { Id = new Guid("99887766-5544-3322-1100-aabbccddeeff"), Name = "Avalanche", CryptocurrencyId = "avalanche-2" },
-            new Cryptocurrency { Id = new Guid("deadbeef-dead-beef-dead-deadbeefdead"), Name = "Stellar", CryptocurrencyId = "stellar" },
-            new Cryptocurrency { Id = new Guid("beadfeed-bead-feed-bead-beadfeedbead"), Name = "Shiba Inu", CryptocurrencyId = "shiba-inu" }
+            new Cryptocurrency { Id = new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"), Name = "Solana", CryptocurrencyId = "solana" }
         );
 
         var adminId = new Guid("33333333-3333-3333-3333-333333333333");
@@ -109,23 +97,23 @@ public class DatabaseContext : DbContext, ITransientLifetime
             new Balance
             {
                 Id = new Guid("77777777-7777-7777-7777-777777777777"),
-                Amount = 0.5, // 0.5 BTC
+                Amount = 0.5, 
                 UserId = userId,
                 CryptocurrencyId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa") // Bitcoin
             },
             new Balance
             {
                 Id = new Guid("88888888-8888-8888-8888-888888888888"),
-                Amount = 5, // 5 ETH
+                Amount = 5,
                 UserId = userId,
                 CryptocurrencyId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb") // Ethereum
             },
             new Balance
             {
                 Id = new Guid("99999999-9999-9999-9999-999999999999"),
-                Amount = 1000, // 1000 USDT
+                Amount = 1000, 
                 UserId = userId,
-                CryptocurrencyId = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc") // Tether
+                CryptocurrencyId = new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff") // Solana
             }
         );
     }

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Data.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -109,20 +109,8 @@ namespace Data.Migrations
                 columns: new[] { "Id", "CryptocurrencyId", "Name" },
                 values: new object[,]
                 {
-                    { new Guid("11111111-2222-3333-4444-555555555555"), "usd-coin", "USD Coin" },
-                    { new Guid("12345678-1234-1234-1234-123456789abc"), "cardano", "Cardano" },
-                    { new Guid("66666666-7777-8888-9999-000000000000"), "dogecoin", "Dogecoin" },
-                    { new Guid("99887766-5544-3322-1100-aabbccddeeff"), "avalanche-2", "Avalanche" },
                     { new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), "bitcoin", "Bitcoin" },
-                    { new Guid("aabbccdd-eeff-0011-2233-445566778899"), "chainlink", "Chainlink" },
-                    { new Guid("abcdefab-cdef-cdef-cdef-abcdefabcdef"), "tron", "TRON" },
                     { new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), "ethereum", "Ethereum" },
-                    { new Guid("beadfeed-bead-feed-bead-beadfeedbead"), "shiba-inu", "Shiba Inu" },
-                    { new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"), "tether", "Tether" },
-                    { new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd"), "ripple", "XRP" },
-                    { new Guid("deadbeef-dead-beef-dead-deadbeefdead"), "stellar", "Stellar" },
-                    { new Guid("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"), "binancecoin", "BNB" },
-                    { new Guid("fedcbafe-dcba-dcba-dcba-fedcbafedcba"), "wrapped-bitcoin", "Wrapped Bitcoin" },
                     { new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"), "solana", "Solana" }
                 });
 
@@ -153,7 +141,7 @@ namespace Data.Migrations
                     { new Guid("66666666-6666-6666-6666-666666666666"), 10.0, new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), new Guid("33333333-3333-3333-3333-333333333333") },
                     { new Guid("77777777-7777-7777-7777-777777777777"), 0.5, new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new Guid("44444444-4444-4444-4444-444444444444") },
                     { new Guid("88888888-8888-8888-8888-888888888888"), 5.0, new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), new Guid("44444444-4444-4444-4444-444444444444") },
-                    { new Guid("99999999-9999-9999-9999-999999999999"), 1000.0, new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"), new Guid("44444444-4444-4444-4444-444444444444") }
+                    { new Guid("99999999-9999-9999-9999-999999999999"), 1000.0, new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"), new Guid("44444444-4444-4444-4444-444444444444") }
                 });
 
             migrationBuilder.InsertData(
