@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Input;
 using Application.Abstractions;
 using Application.Domain;
+using Application.Models;
 using Presentation.Commands;
 using Presentation.Windows;
 using SmartSalon.Application.ResultObject;
@@ -53,7 +54,7 @@ public class MainViewModel : ViewModelBase
         LoadDataAsync();
     }
 
-    public ObservableCollection<Balance> NonZeroBalances { get; } = new();
+    public ObservableCollection<KeyValuePair<string, double>> Balances { get; } = new();
     public ObservableCollection<User> OtherUsers { get; } = new();
 
     public double TotalBalance
@@ -138,8 +139,8 @@ public class MainViewModel : ViewModelBase
     {
         try
         {
-           await LoadNonZeroBalances();
-           CalculateUserBalanceInUsd();
+           await LoadBalancesToDisplay();
+            TotalBalance = (await this._balanceService.CalculateTheTotalBalanceInUsd(_currentUser.Id)).GetAmount<Usd>();
            LoadOtherUsers();
         }
         catch (Exception ex)
@@ -159,38 +160,15 @@ public class MainViewModel : ViewModelBase
         }
     }
 
-    private async void CalculateUserBalanceInUsd()
+    private async Task LoadBalancesToDisplay()
     {
-        if (NonZeroBalances.Any())
+        var balances = await _balanceService.GetBalancesToDisplay(_currentUser.Id);
+
+        Balances.Clear();
+
+        foreach (var kvp in balances)
         {
-            var vsCurrency = "usd";
-            var cryptoIds = NonZeroBalances.Select(b => b?.Cryptocurrency?.CryptocurrencyId).Where(id => id != null).ToArray();
-            var prices = await _cryptoPriceService.GetCryptoPricesAsync(cryptoIds, vsCurrency);
-
-            double total = 0;
-
-            foreach (var balance in NonZeroBalances)
-            {
-                total += balance.Amount * prices[balance!.Cryptocurrency!.CryptocurrencyId];
-            }
-
-            TotalBalance = total;
-        }
-        else
-        {
-            TotalBalance = 0;
-        }
-    }
-
-    private async Task LoadNonZeroBalances()
-    {
-        var balances = await _balanceService.GetUserBalancesAsync(_currentUser.Id);
-
-        NonZeroBalances.Clear();
-
-        foreach (var balance in balances.Where(b => b.Amount > 0))
-        {
-            NonZeroBalances.Add(balance);
+            Balances.Add(kvp);
         }
     }
 } 

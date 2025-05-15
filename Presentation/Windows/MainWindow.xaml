@@ -42,13 +42,13 @@
                     </StackPanel>
 
                     <DataGrid Grid.Row="1" 
-                              ItemsSource="{Binding NonZeroBalances}"
+                              ItemsSource="{Binding Balances}"
                               AutoGenerateColumns="False"
                               IsReadOnly="True"
                               SelectionMode="Single">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Cryptocurrency" Binding="{Binding Cryptocurrency.Name}" Width="*"/>
-                            <DataGridTextColumn Header="Amount" Binding="{Binding Amount, StringFormat=N8}" Width="*"/>
+                            <DataGridTextColumn Header="Cryptocurrency" Binding="{Binding Key}" Width="*"/>
+                            <DataGridTextColumn Header="Amount" Binding="{Binding Value, StringFormat=N8}" Width="*"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>

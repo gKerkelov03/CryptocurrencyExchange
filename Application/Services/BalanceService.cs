@@ -1,4 +1,5 @@
 using Application.Abstractions;
+using Application.DataStructures;
 using Application.Domain;
 using Application.Models;
 
@@ -7,20 +8,39 @@ namespace Application.Services;
 public class BalanceService : IBalanceService
 {
     private readonly IEfRepository<Balance> _balanceRepository;
+    private readonly ICryptoPriceService _cryptoPriceService;
 
-    public BalanceService(IEfRepository<Balance> balanceRepository) => _balanceRepository = balanceRepository;
-
-    public async Task<IEnumerable<Balance>> GetUserBalancesAsync(Guid userId)
+    public BalanceService(IEfRepository<Balance> balanceRepository, ICryptoPriceService cryptoPriceService)
     {
-        try
+        _balanceRepository = balanceRepository;
+        _cryptoPriceService = cryptoPriceService;
+    }
+
+    public async Task<SingleCurrency<Usd>> CalculateTheTotalBalanceInUsd(Guid userId)
+    {
+        var vsCurrency = "usd";
+        var balances = await _balanceRepository.FindAllAsync(b => b.UserId == userId);
+
+        var cryptoIds = balances.Select(b => b?.Cryptocurrency?.CryptocurrencyId).Where(id => id != null).ToArray();
+        var prices = await _cryptoPriceService.GetCryptoPricesAsync(cryptoIds, vsCurrency);
+
+        double total = 0;
+
+        foreach (var balance in balances)
         {
-            var balances = await _balanceRepository.FindAllAsync(b => b.UserId == userId);
-            return balances.Where(b => b.Cryptocurrency != null);
+            total += balance.Amount * prices[balance!.Cryptocurrency!.CryptocurrencyId];
         }
-        catch (Exception ex)
-        {
-            throw new InvalidOperationException($"Error retrieving user balances: {ex.Message}", ex);
-        }
+
+        var totalInUsd = new SingleCurrency<Usd>(total);
+
+        return totalInUsd;
+    }
+
+    public async Task<Dictionary<string, double>> GetBalancesToDisplay(Guid userId)
+    {
+        var balances = await _balanceRepository.FindAllAsync(b => b.UserId == userId);
+
+        return balances.ToDictionary(b => b!.Cryptocurrency!.Name, b => b.Amount);
     }
 
     public async Task TransferAsync(TransferRequest request)

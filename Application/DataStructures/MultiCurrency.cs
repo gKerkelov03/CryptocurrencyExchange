@@ -11,7 +11,7 @@ public struct MultiCurrency
 
     private MultiCurrency(Dictionary<Type, object> amounts) => _amounts = amounts;
 
-    public MultiCurrency Add<TCurrency>(SingleCurrency<TCurrency> amount) where TCurrency : ICrypto
+    public MultiCurrency Add<TCurrency>(SingleCurrency<TCurrency> amount) where TCurrency : ICurrency
     {
         var copy = new Dictionary<Type, object>(_amounts);
 
@@ -28,7 +28,7 @@ public struct MultiCurrency
         return new MultiCurrency(copy);
     }
 
-    public SingleCurrency<TCurrency> Get<TCurrency>() where TCurrency : ICrypto
+    public SingleCurrency<TCurrency> Get<TCurrency>() where TCurrency : ICurrency
     {
         if (_amounts.TryGetValue(typeof(TCurrency), out var value))
         {
@@ -52,7 +52,7 @@ public struct MultiCurrency
         return result;
     }
 
-    public MultiCurrency Subtract<TCurrency>(SingleCurrency<TCurrency> amount) where TCurrency : ICrypto
+    public MultiCurrency Subtract<TCurrency>(SingleCurrency<TCurrency> amount) where TCurrency : ICurrency
     {
         var copy = new Dictionary<Type, object>(_amounts);
         if (copy.TryGetValue(typeof(TCurrency), out var existing))
@@ -68,7 +68,7 @@ public struct MultiCurrency
         return new MultiCurrency(copy);
     }
 
-    public SingleCurrency<TTarget> ConvertTo<TTarget>(Dictionary<Type, double> exchangeRates) where TTarget : ICrypto
+    public SingleCurrency<TTarget> ConvertTo<TTarget>(Dictionary<Type, double> exchangeRates) where TTarget : ICurrency
     {
         double total = 0;
 
@@ -97,7 +97,7 @@ public struct MultiCurrency
 
         return new SingleCurrency<TTarget>(total);
     }
-    private static double ConvertCurrency<TFrom, TTo>(object amountObj, double rate) where TFrom : ICrypto where TTo : ICrypto
+    private static double ConvertCurrency<TFrom, TTo>(object amountObj, double rate) where TFrom : ICurrency where TTo : ICurrency
         => ((SingleCurrency<TFrom>)amountObj).ConvertTo<TTo>(rate).GetAmount<TTo>();
 
     public override string ToString()
@@ -110,6 +110,6 @@ public struct MultiCurrency
             return $"{method.Invoke(null, [kvp.Value])} {currencyName}";
         }));
 
-    private static string GetDisplayValue<TCurrency>(object obj) where TCurrency : ICrypto
+    private static string GetDisplayValue<TCurrency>(object obj) where TCurrency : ICurrency
         => ((SingleCurrency<TCurrency>)obj).GetAmount<TCurrency>().ToString("0.##");
 }

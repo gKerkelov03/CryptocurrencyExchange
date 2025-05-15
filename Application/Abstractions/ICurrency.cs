@@ -2,6 +2,6 @@
 
 namespace Application.Abstractions;
 
-public interface ICrypto
+public interface ICurrency
 {
 }

@@ -1,14 +1,14 @@
 using Application.Abstractions;
 
 namespace Application.DataStructures;
-public readonly struct SingleCurrency<TCurrency> where TCurrency : ICrypto
+public readonly struct SingleCurrency<TCurrency> where TCurrency : ICurrency
 {
     private readonly double _amount;
 
     public SingleCurrency(double amount) => _amount = amount;
 
     public SingleCurrency<TOtherCurrency> ConvertTo<TOtherCurrency>(double exchangeRate)
-        where TOtherCurrency : ICrypto
+        where TOtherCurrency : ICurrency
             => new SingleCurrency<TOtherCurrency>(_amount * exchangeRate);
 
     public double GetAmount<TRequestedCurrency>() where TRequestedCurrency: TCurrency => _amount;
