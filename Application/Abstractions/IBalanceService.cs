@@ -9,5 +9,5 @@ public interface IBalanceService : ITransientLifetime
 
     Task<SingleCurrency<Usd>> CalculateTheTotalBalanceInUsd(Guid userId);
 
-    Task<Dictionary<string, double>> GetBalancesToDisplay(Guid userId);
+    Task<Dictionary<string, string>> GetBalancesToDisplay(Guid userId);
 } 

@@ -36,11 +36,11 @@ public class BalanceService : IBalanceService
         return totalInUsd;
     }
 
-    public async Task<Dictionary<string, double>> GetBalancesToDisplay(Guid userId)
+    public async Task<Dictionary<string, string>> GetBalancesToDisplay(Guid userId)
     {
         var balances = await _balanceRepository.FindAllAsync(b => b.UserId == userId);
 
-        return balances.ToDictionary(b => b!.Cryptocurrency!.Name, b => b.Amount);
+        return balances.ToDictionary(b => b!.Cryptocurrency!.Name, b => b.Amount.ToString());
     }
 
     public async Task TransferAsync(TransferRequest request)

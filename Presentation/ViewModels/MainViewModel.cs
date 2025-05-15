@@ -54,7 +54,7 @@ public class MainViewModel : ViewModelBase
         LoadDataAsync();
     }
 
-    public ObservableCollection<KeyValuePair<string, double>> Balances { get; } = new();
+    public ObservableCollection<KeyValuePair<string, string>> Balances { get; } = new();
     public ObservableCollection<User> OtherUsers { get; } = new();
 
     public double TotalBalance

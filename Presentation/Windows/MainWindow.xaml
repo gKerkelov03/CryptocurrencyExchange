@@ -48,7 +48,7 @@
                               SelectionMode="Single">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Cryptocurrency" Binding="{Binding Key}" Width="*"/>
-                            <DataGridTextColumn Header="Amount" Binding="{Binding Value, StringFormat=N8}" Width="*"/>
+                            <DataGridTextColumn Header="Amount" Binding="{Binding Value}" Width="*"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
