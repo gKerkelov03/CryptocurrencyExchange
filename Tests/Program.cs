@@ -1,27 +1,23 @@
 ﻿
 using Application.DataStructures;
-
+using Application.Models;
 
 namespace DataStructures;
 
 public class Program
 {
-    private SingleCurrency<Bitcoin> btc1 = new SingleCurrency<Bitcoin>(1.5);
-    private btc2 = new SingleCurrency<Bitcoin>(2.0);
-    private eth1 = new SingleCurrency<Ethereum>(3.0);
+    private static SingleCurrency<Bitcoin> btc1 = new SingleCurrency<Bitcoin>(1.5);
+    private static SingleCurrency<Bitcoin> btc2 = new SingleCurrency<Bitcoin>(2.0);
+    private static SingleCurrency<Ethereum> eth1 = new SingleCurrency<Ethereum>(3.0);
 
     public static void Main()
     {
-       
-
-        // Test MultiCurrency
-       
+        TestSingleCurrency();
+        TestMultiCurrency();
     }
 
     public static void TestSingleCurrency()
     {
-        
-
         // Addition
         var btcTotal = btc1 + btc2;
         Console.WriteLine($"BTC Total: {btcTotal}");
@@ -75,13 +71,13 @@ public class Program
         Console.WriteLine($"MultiCurrency converted to ETH: {totalInEth}");
 
         // Convert to new currency not originally present
-        var exchangeRatesToDogecoin = new Dictionary<Type, double>
+        var exchangeRatesToSolana = new Dictionary<Type, double>
         {
             { typeof(Bitcoin), 10000.0 },    // 1 BTC = 10,000 DOGE
             { typeof(Ethereum), 500.0 }      // 1 ETH = 500 DOGE
         };
 
-        var totalInDoge = multi.ConvertTo<Dogecoin>(exchangeRatesToDogecoin);
+        var totalInDoge = multi.ConvertTo<Solana>(exchangeRatesToSolana);
         Console.WriteLine($"MultiCurrency converted to DOGE: {totalInDoge}");
     }
 }
